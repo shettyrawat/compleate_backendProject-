@@ -1,6 +1,6 @@
-import { handleChatMessage } from './src/services/chatbot.service.js';
+import { handleChatMessage } from '../src/services/chatbot.service.js';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 import fs from 'fs';
 

@@ -1,4 +1,4 @@
-import { handleChatMessage } from './src/services/chatbot.service.js';
+import { handleChatMessage } from '../src/services/chatbot.service.js';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 // Setup environment
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const testHistoryRoleFix = async () => {
     console.log('--- Testing History Role Fix ---');

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { jobService } from '../services/apiService';
-import { FiPlus, FiSearch, FiFilter, FiCalendar, FiMapPin } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiFilter, FiCalendar, FiMapPin, FiTrash2 } from 'react-icons/fi';
 import { MdCurrencyRupee } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -24,6 +24,18 @@ const JobList = () => {
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (!window.confirm('Are you sure you want to remove this application?')) return;
+
+        try {
+            await jobService.deleteJob(id);
+            setJobs(jobs.filter(job => job._id !== id));
+        } catch (err) {
+            console.error('Failed to delete job:', err);
+            alert('Failed to delete job application.');
         }
     };
 
@@ -97,17 +109,37 @@ const JobList = () => {
                                 <h3 style={{ fontSize: '1.2rem' }}>{job.company}</h3>
                                 <p style={{ color: 'var(--accent)', fontWeight: '500' }}>{job.position}</p>
                             </div>
-                            <span style={{
-                                padding: '4px 12px',
-                                borderRadius: '20px',
-                                fontSize: '0.8rem',
-                                background: `${getStatusColor(job.status)}20`,
-                                color: getStatusColor(job.status),
-                                fontWeight: '600',
-                                textTransform: 'capitalize'
-                            }}>
-                                {job.status}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+                                <span style={{
+                                    padding: '4px 12px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.8rem',
+                                    background: `${getStatusColor(job.status)}20`,
+                                    color: getStatusColor(job.status),
+                                    fontWeight: '600',
+                                    textTransform: 'capitalize'
+                                }}>
+                                    {job.status}
+                                </span>
+                                <button
+                                    onClick={() => handleDelete(job._id)}
+                                    className="btn-icon"
+                                    style={{
+                                        color: 'var(--danger)',
+                                        padding: '4px',
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        opacity: 0.6,
+                                        transition: 'opacity 0.2s'
+                                    }}
+                                    onMouseOver={(e) => e.target.style.opacity = 1}
+                                    onMouseOut={(e) => e.target.style.opacity = 0.6}
+                                    title="Remove Application"
+                                >
+                                    <FiTrash2 size={18} />
+                                </button>
+                            </div>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>

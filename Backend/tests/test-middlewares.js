@@ -1,11 +1,11 @@
 import express from 'express';
-import asyncHandler from './src/middleware/async.middleware.js';
-import errorHandler from './src/middleware/error.middleware.js';
-import ErrorResponse from './src/utils/errorResponse.js';
+import asyncHandler from '../src/middleware/async.middleware.js';
+import errorHandler from '../src/middleware/error.middleware.js';
+import ErrorResponse from '../src/utils/errorResponse.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const app = express();
 app.use(express.json());

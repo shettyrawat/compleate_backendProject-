@@ -1,6 +1,6 @@
-import { generateOptimizedData } from './src/services/resumeScoring.service.js';
+import { generateOptimizedData } from '../src/services/resumeScoring.service.js';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
 const testResumeText = `
 John Doe

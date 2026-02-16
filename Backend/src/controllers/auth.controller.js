@@ -24,13 +24,29 @@ const generateToken = (id) => {
     });
 };
 
+const DISPOSABLE_DOMAINS = [
+    'mailinator.com', 'yopmail.com', 'tempmail.com', 'guerrillamail.com',
+    '10minutemail.com', 'sharklasers.com', 'dispostable.com', 'getnada.com',
+    'bugmenot.com', 'trashmail.com'
+];
+
 const validateEmailDomain = async (email) => {
     try {
-        const domain = email.split('@')[1];
+        const domain = email.split('@')[1].toLowerCase();
+
+        // Block disposable domains
+        if (DISPOSABLE_DOMAINS.includes(domain)) {
+            return { valid: false, message: 'Disposable email addresses are not allowed' };
+        }
+
         const records = await resolveMx(domain);
-        return records && records.length > 0;
+        if (!records || records.length === 0) {
+            return { valid: false, message: 'Invalid or unreachable email domain' };
+        }
+
+        return { valid: true };
     } catch (error) {
-        return false;
+        return { valid: false, message: 'Error validating email domain' };
     }
 };
 
@@ -148,9 +164,9 @@ export const register = async (req, res, next) => {
         }
 
         // Validate email domain
-        const isValidDomain = await validateEmailDomain(email);
-        if (!isValidDomain) {
-            return res.status(400).json({ message: 'Invalid or unreachable email domain' });
+        const validationResult = await validateEmailDomain(email);
+        if (!validationResult.valid) {
+            return res.status(400).json({ message: validationResult.message });
         }
 
         // Generate 6-digit Verification OTP

@@ -1,4 +1,4 @@
-import { extractInfo } from './src/services/resumeParser.service.js';
+import { extractInfo } from '../src/services/resumeParser.service.js';
 
 const testText = "Experienced developer in C++, JavaScript, and React.";
 const result = extractInfo(testText);
