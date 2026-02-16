@@ -5,6 +5,7 @@ import { MdCurrencyRupee } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Loader from '../components/Loader';
+import { formatDate } from '../utils/dateUtils';
 
 const JobList = () => {
     const [jobs, setJobs] = useState([]);
@@ -150,7 +151,7 @@ const JobList = () => {
                                 <MdCurrencyRupee size={16} /> {job.salary || 'Not specified'}
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <FiCalendar size={16} /> Applied on {new Date(job.createdAt).toLocaleDateString()}
+                                <FiCalendar size={16} /> Applied on {formatDate(job.createdAt)}
                             </div>
                         </div>
 

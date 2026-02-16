@@ -1,9 +1,9 @@
 import User from '../models/User.js';
-import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { sendOTPEmail } from '../services/email.service.js';
-import dns from 'dns';
-import { promisify } from 'util';
+import { validateEmailDomain } from '../utils/emailValidator.js';
+import { generateOTP } from '../utils/otpGenerator.js';
+import { generateToken } from '../utils/tokenGenerator.js';
 import { v2 as cloudinary } from 'cloudinary';
 
 // Cloudinary config
@@ -13,42 +13,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const resolveMx = promisify(dns.resolveMx);
-
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-// Generate JWT
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '7d',
-    });
-};
-
-const DISPOSABLE_DOMAINS = [
-    'mailinator.com', 'yopmail.com', 'tempmail.com', 'guerrillamail.com',
-    '10minutemail.com', 'sharklasers.com', 'dispostable.com', 'getnada.com',
-    'bugmenot.com', 'trashmail.com'
-];
-
-const validateEmailDomain = async (email) => {
-    try {
-        const domain = email.split('@')[1].toLowerCase();
-
-        // Block disposable domains
-        if (DISPOSABLE_DOMAINS.includes(domain)) {
-            return { valid: false, message: 'Disposable email addresses are not allowed' };
-        }
-
-        const records = await resolveMx(domain);
-        if (!records || records.length === 0) {
-            return { valid: false, message: 'Invalid or unreachable email domain' };
-        }
-
-        return { valid: true };
-    } catch (error) {
-        return { valid: false, message: 'Error validating email domain' };
-    }
-};
 
 // @desc    Google Login
 // @route   POST /api/auth/google
@@ -131,7 +96,7 @@ export const resendOTP = async (req, res, next) => {
         }
 
         // Generate 6-digit Verification OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = generateOTP();
 
         user.verificationOTP = otp;
         user.verificationOTPExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
@@ -170,7 +135,7 @@ export const register = async (req, res, next) => {
         }
 
         // Generate 6-digit Verification OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = generateOTP();
 
         // Create user (unverified)
         const user = await User.create({
@@ -304,7 +269,7 @@ export const requestLoginOTP = async (req, res, next) => {
         }
 
         // Generate 6-digit Login OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = generateOTP();
         user.loginOTP = otp;
         user.loginOTPExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
         await user.save();
@@ -397,7 +362,7 @@ export const requestPasswordOTP = async (req, res, next) => {
         }
 
         // Generate 6-digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = generateOTP();
 
         user.resetPasswordOTP = otp;
         user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes

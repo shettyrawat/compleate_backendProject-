@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { FiUser, FiMail, FiEdit2, FiCheck, FiX, FiLock, FiSend } from 'react-icons/fi';
 import { ButtonLoader } from '../components/Loader';
+import { formatDate } from '../utils/dateUtils';
 
 const Profile = () => {
     const { user, updateProfile, requestOTP, resetPassword } = useAuth();
@@ -238,7 +239,7 @@ const Profile = () => {
 
                 <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '1px solid var(--glass-border)' }}>
                     <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-                        {t('profile.joined') || 'Joined on'} {new Date(user.createdAt || Date.now()).toLocaleDateString()}
+                        {t('profile.joined') || 'Joined on'} {formatDate(user.createdAt)}
                     </p>
                 </div>
             </div>
